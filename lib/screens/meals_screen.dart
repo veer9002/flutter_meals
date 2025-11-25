@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:meals/main.dart';
 import 'package:meals/models/meal.dart';
+import 'package:meals/screens/meals_desc.dart';
+import 'package:meals/widgets/menu_item.dart';
 
 class MealsScreen extends StatelessWidget {
-  const MealsScreen({super.key, required this.title, required this.meals});
+  const MealsScreen({super.key, this.title, required this.meals});
 
-  final String title;
+  final String? title;
   final List<Meal> meals;
+
+  void selectMeal(BuildContext context, Meal meal) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (ctx) => MealsDescScreen(meal: meal)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +24,7 @@ class MealsScreen extends StatelessWidget {
         child: Text(
           'Empty meals, try selecting a different category!',
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -25,17 +33,20 @@ class MealsScreen extends StatelessWidget {
     if (meals.isNotEmpty) {
       content = ListView.builder(
         itemCount: meals.length,
-        itemBuilder: (cxt, index) => Text(
-          meals[index].title,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
+        itemBuilder: (cxt, index) => MealsItem(
+          meal: meals[index],
+          onSelectMeal: (meal) {
+            selectMeal(context, meal);
+          },
         ),
       );
     }
 
+    if (title == null) {
+      return content;
+    }
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(title!)),
       body: content,
     );
   }
